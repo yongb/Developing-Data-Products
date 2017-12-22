@@ -6,17 +6,14 @@ library(shiny)
 shinyUI(pageWithSidebar(
   headerPanel("Prediction of House Price in Sacramento"),
   sidebarPanel(
-    selectInput('city', 'Select City:', levels(mydata$city)),
-    selectInput('zip', 'Select the zipcode',levels(mydata$zip)),
-    numericInput('beds', 'Select the number of bedrooms:',1 , min = 1, max = 6, step = 1 ),
-    numericInput('baths', 'Select the number of bathrooms:', 1 , min = 1, max = 5, step = 1 ),
-    selectInput('type', 'Select the type of house:', levels(mydata$type)),
-    numericInput('sqft', 'Enter total square feet:',2000, min = 200, max = 5000),
+    sliderInput(inputId = "sqft",
+                label = "Enter total square feet:",
+                min = 200, max = 5000, value = 2000, step = 100),
     submitButton('Submit')
     
   ),
   mainPanel(
-    h3('Accroding to your inputs, price of the house in USD is:'),
+    h3('Accroding to your inputs, price of the house is:'),
     verbatimTextOutput("prediction")
   )
 ))

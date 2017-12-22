@@ -1,24 +1,26 @@
 
+#
+# This is a Shiny web application help the house owners to estimate the house price based on the historical information in Sacramento, CA.
+#
 
 
 library(caret)
-library(randomForest)
-data(Sacramento)
-mydata <- Sacramento[,c(1:7)]
-set.seed(955)
-in_train <- createDataPartition(log10(mydata$price), p = .8, list = FALSE)
-training <- mydata[ in_train,]
-testing <- mydata[-in_train,]
-model.forest <- train(price~., training, method = "rf", trControl = trainControl(method = "cv", number = 3))
-testing$pred <- predict(model.forest, newdata = testing)
-
-housePrice <- function(x){
-  predict(model.forest, newdata = x)
-}
-
 library(shiny)
+library(UsingR)
+data(Sacramento)
+
+fit= lm(price ~ sqft, data = Sacramento)
+slope <- coef(fit)[2]
+names(slope)<- "US$ Dollars"
+
+housePrice <- function(sqft) {sqft*slope + coef(fit)[1]}
+
+
 shinyServer(
   function(input, output) {
-    output$prediction <- renderPrint(housePrice(x = data.frame(city=input$city, zip=input$zip,beds=input$beds, baths=input$baths, sqft=input$sqft, type=input$type)))
+    output$inputValue <- renderPrint({input$sqft})
+    output$prediction <- renderPrint(housePrice(sqft=input$sqft))
   }
 )
+
+

@@ -13,14 +13,18 @@ knitr::opts_chunk$set(echo = FALSE)
 
 This was built as part of assignment for the course Developing Data Products as part of the Coursera Data Science Specialization.
 
-The app developed for the first part of the assignment demo is avalilable at: https://b33lie.shinyapps.io/shiny_app_mtcars/
+The application can be found in the following link
 
-Source code for ui.R and server.R files are available on the GitHub repo: https://github.com/b33lie/shiny_app_mtcars/
+https://ybao.shinyapps.io/House/
+
+The source code is hosted in the following link
+
+https://github.com/yongb/Developing-Data-Products
 
 ## Web Application Usages
 
-- This is a Shiny web application help the house owners to estimate the house price based on the historical information in Sacramento, CA.
-- The house information about the city, zip, number of beds, number of baths, total square feet, and type associated with the house need to be provided by the house owner to estimate the house prices in the market. 
+- This is a Shiny web application help the customers to estimate the house price based on the total square feet associated with the house.
+- The total square feet need to be provided by the customers followed by clicking the "Submit" button. 
 
 ## Sacramento Dataset
 
@@ -29,23 +33,25 @@ The data used in the web app was retrived from the Sacramento dataset from R pac
 ```{r Sacramento, echo = TRUE}
 library(caret)
 data(Sacramento)
-mydata <- Sacramento[,c(1:7)]
-str(mydata)
+str(Sacramento)
 ```
+
 
 ## Plot 
 
 The coorelation bewteen predicted and actual house prices in the Scaramento dataset.
 
 ```{r coorelation}
-set.seed(955)
-in_train <- createDataPartition(log10(mydata$price), p = .8, list = FALSE)
-training <- mydata[ in_train,]
-testing <- mydata[-in_train,]
-model.forest <- train(price~., training, method = "rf", trControl = trainControl(method = "cv", number = 3))
-testing$pred <- predict(model.forest, newdata = testing)
-plot(testing$pred,testing$price, main="Coorelation between predicted and actual house prices", 
+
+set.seed(25)
+in_train <- createDataPartition(log10(Sacramento$price), p = .8, list = FALSE)
+training <- Sacramento[ in_train,]
+testing <- Sacramento[-in_train,]
+fit= lm(price ~ sqft, data = training)
+slope <- coef(fit)[2]
+sqft = testing$sqft
+pred <- sqft*slope + coef(fit)[1]
+plot(pred,testing$price, main="Coorelation between predicted and actual house prices", 
   	xlab="Predicted ", ylab="Actual ", pch=19)
 
 ```
-
